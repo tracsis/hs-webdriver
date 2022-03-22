@@ -25,6 +25,8 @@ import Control.Monad.Trans.State.Strict as SS
 import Control.Monad.Trans.Writer.Lazy as LW
 import Control.Monad.Trans.Writer.Strict as SW
 import Data.CallStack
+import Control.Monad.IO.Class (MonadIO)
+import Control.Monad.Catch (MonadMask)
 
 #if !MIN_VERSION_base(4,8,0)
 import Data.Monoid (Monoid) -- for some reason "import Prelude" trick doesn't work with "import Data.Monoid"
@@ -35,7 +37,7 @@ import Data.Monoid (Monoid) -- for some reason "import Prelude" trick doesn't wo
 -- operation underlying all of the high-level commands exported in
 -- "Test.WebDriver.Commands". For more information on the wire protocol see
 -- <https://github.com/SeleniumHQ/selenium/wiki/JsonWireProtocol>
-class (WDSessionStateControl wd) => WebDriver wd where
+class (WDSessionStateControl wd, MonadIO wd, MonadMask wd) => WebDriver wd where
   doCommand :: (HasCallStack, ToJSON a, FromJSON b) =>
                    Method      -- ^HTTP request method
                 -> Text        -- ^URL of request
@@ -55,9 +57,6 @@ instance WebDriver wd => WebDriver (MaybeT wd) where
   doCommand rm t a = lift (doCommand rm t a)
 
 instance WebDriver wd => WebDriver (IdentityT wd) where
-  doCommand rm t a = lift (doCommand rm t a)
-
-instance WebDriver wd => WebDriver (ListT wd) where
   doCommand rm t a = lift (doCommand rm t a)
 
 instance (Monoid w, WebDriver wd) => WebDriver (LW.WriterT w wd) where
