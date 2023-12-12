@@ -21,11 +21,8 @@ import Test.WebDriver.Config
 import Test.WebDriver.Internal
 import Test.WebDriver.Session
 
-#if MIN_VERSION_base(4,9,0)
-import qualified Control.Monad.Fail as Fail
-#endif
-
 import Control.Monad.Base (MonadBase, liftBase)
+import Control.Monad.Fail
 import Control.Monad.Fix
 import Control.Monad.IO.Class
 import Control.Monad.Trans.Control (MonadBaseControl(..), StM)
@@ -36,7 +33,7 @@ import Control.Applicative
 
 import Data.CallStack
 
-import Prelude -- hides some "unused import" warnings
+import Prelude hiding (fail) -- hides some "unused import" warnings
 
 
 {- | A state monad for WebDriver commands. -}
@@ -46,10 +43,8 @@ newtype WD a = WD (StateT WDSession IO a)
 instance MonadBase IO WD where
   liftBase = WD . liftBase
 
-#if MIN_VERSION_base(4,9,0)
-instance Fail.MonadFail WD where
-  fail s = WD $ Fail.fail s
-#endif
+instance MonadFail WD where
+  fail s = WD $ fail s
 
 instance MonadBaseControl IO WD where
 #if MIN_VERSION_monad_control(1,0,0)
