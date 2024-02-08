@@ -5,19 +5,19 @@
 
 packages:
 - completed:
-    hackage: aeson-2.2.0.0@sha256:deeab33f7f2a235c9e9ea76168f27a3669ad51bbdb363e830015352a3b2874ec,6217
+    hackage: aeson-2.2.1.0@sha256:a23a61aada8233e10573e1612c0b2efe5a1aba0d59b05dbe2f63301822f136cb,6582
     pantry-tree:
-      sha256: 2c65659ff9ab19047728c8cc2f20869ba7ca78a09fe03cecf826f5857f3d4c95
-      size: 83036
+      sha256: 8a50c54b9ecba80ecc3df3ea67faa4d155d6f6a6b3e342c74f3e6b0dcdc87e13
+      size: 83518
   original:
-    hackage: aeson-2.2.0.0
+    hackage: aeson-2.2.1.0
 - completed:
-    hackage: attoparsec-aeson-2.2.0.0@sha256:72bbc4227328ab8bd0046d230921f9d2c0c473a2f4b72387524cc5e179dd5b81,1578
+    hackage: attoparsec-aeson-2.2.0.1@sha256:00026bb205aaa087215a4c3a65a62c4561c3fb58e882778c9607c63e2aa960e9,1593
     pantry-tree:
-      sha256: 3e3a9bbb48e3fc8e00f2e1f4f66e49af76c6c67e9038ea8a1cab2c4a886c557b
+      sha256: 45128f4bf673506d19f00bbe3b2fa8312e5774cdee7ad9384268016b1e4f2dcf
       size: 477
   original:
-    hackage: attoparsec-aeson-2.2.0.0
+    hackage: attoparsec-aeson-2.2.0.1
 - completed:
     hackage: integer-conversion-0.1@sha256:9f77cc7711d3100a4483f2dd1a22f4be5b59d235a556d910d0e6c5e90a967551,2208
     pantry-tree:
@@ -34,7 +34,7 @@ packages:
     hackage: text-iso8601-0.1
 snapshots:
 - completed:
-    sha256: 0580a03f247573451c0a676673e0c2b474e0d42f78d4a93c4cd10eb32f2cb911
-    size: 698107
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2023/11/10.yaml
-  original: nightly-2023-11-10
+    sha256: a62ce331ea0cf40415b4ae527f36876e106989c27968d703bdb655ec0b42eca7
+    size: 597897
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/nightly/2024/2/7.yaml
+  original: nightly-2024-02-07
