@@ -1,11 +1,11 @@
 
-resolver: nightly-2023-11-10
+resolver: nightly-2024-02-07
 
 packages:
 - '.'
 
 extra-deps:
-- aeson-2.2.0.0
-- attoparsec-aeson-2.2.0.0
+- aeson-2.2.1.0
+- attoparsec-aeson-2.2.0.1
 - integer-conversion-0.1
 - text-iso8601-0.1
