@@ -60,7 +60,7 @@ usePlatform p = modifyCaps $ \c -> c { platform = p }
 
 -- |A helper function for setting the 'useProxy' capability of a 'HasCapabilities' instance
 useProxy :: HasCapabilities t => ProxyType -> t -> t
-useProxy p = modifyCaps $ \c -> c { proxy = p }
+useProxy p = modifyCaps $ \c -> c { proxy = Just p }
 
 
 {- |A structure describing the capabilities of a session. This record
@@ -84,7 +84,7 @@ data Capabilities =
                  -- |Platform on which the browser should run.
                , platform                 :: Platform
                  -- |Proxy configuration settings.
-               , proxy                    :: ProxyType
+               , proxy                    :: Maybe ProxyType
                  -- |Whether the session supports executing JavaScript via
                  -- 'executeJS' and 'asyncJS'.
                , javascriptEnabled        :: Maybe Bool
@@ -142,7 +142,7 @@ instance Default Capabilities where
                      , rotatable = Nothing
                      , acceptSSLCerts = Nothing
                      , nativeEvents = Nothing
-                     , proxy = UseSystemSettings
+                     , proxy = Nothing
                      , unexpectedAlertBehavior = Nothing
                      , additionalCaps = []
                      }
@@ -265,7 +265,7 @@ instance FromJSON Capabilities where
     Capabilities <$> getBrowserCaps browser
                  <*> opt "version" Nothing
                  <*> opt "platformName" Any
-                 <*> opt "proxy" NoProxy
+                 <*> opt "proxy" Nothing
                  <*> b "javascriptEnabled"
                  <*> b "takesScreenshot"
                  <*> b "handlesAlerts"
