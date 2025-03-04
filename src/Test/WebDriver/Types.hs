@@ -15,7 +15,7 @@ module Test.WebDriver.Types (
   , Browser(..),
 
     -- ** Default settings for browsers
-    firefox, chrome, ie, opera, iPhone, iPad, android
+    firefox, chrome, edge, ie, opera, iPhone, iPad, android
   , LogLevel(..), IELogLevel(..), IEElementScrollBehavior(..)
 
     -- * WebDriver objects and command-specific types

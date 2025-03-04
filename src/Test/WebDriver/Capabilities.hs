@@ -197,10 +197,13 @@ instance ToJSON Capabilities where
     where
       browserInfo = case browser of
         Firefox {..}
-          -> ["firefox_profile" .= ffProfile
-             ,"loggingPrefs" .= object ["driver" .= ffLogPref]
-             ,"firefox_binary" .= ffBinary
-             ,"acceptInsecureCerts" .= fromMaybe False ffAcceptInsecureCerts
+          -> [ "acceptInsecureCerts" .= fromMaybe False ffAcceptInsecureCerts
+             , "moz:firefoxOptions" .= object (catMaybes
+                  [ fmap ("profile" .=) ffProfile
+                  , fmap ("binary" .=) ffBinary
+                  ] ++
+                  [ "log" .= object [ "level" .= ffLogPref ]
+                  ])
              ]
         Chrome {..}
           -> catMaybes [ opt "chrome.chromedriverVersion" chromeDriverVersion ]
@@ -210,6 +213,14 @@ instance ToJSON Capabilities where
                   [ "args"       .= chromeOptions
                   , "extensions" .= chromeExtensions
                   ] ++ HM.toList chromeExperimentalOptions
+                )]
+        Edge {..}
+          ->    [ "ms:edgeOptions" .= object (catMaybes
+                  [ opt "binary" edgeBinary
+                  ] ++
+                  [ "args"       .= edgeOptions
+                  , "extensions" .= edgeExtensions
+                  ] ++ HM.toList edgeExperimentalOptions
                 )]
         IE {..}
           -> ["ignoreProtectedModeSettings" .= ieIgnoreProtectedModeSettings
@@ -302,6 +313,7 @@ instance FromJSON Capabilities where
             ++ case browser of
               Firefox {} -> ["firefox_profile", "loggingPrefs", "firefox_binary", "acceptInsecureCerts"]
               Chrome {} -> ["chrome.chromedriverVersion", "chrome.extensions", "chrome.switches", "chrome.extensions"]
+              Edge {} -> ["msedge.msedgedriverVersion"]
               IE {} -> ["ignoreProtectedModeSettings", "ignoreZoomSettings", "initialBrowserUrl", "elementScrollBehavior"
                        ,"enablePersistentHover", "enableElementCacheCleanup", "requireWindowFocus", "browserAttachTimeout"
                        ,"logFile", "logLevel", "host", "extractPath", "silent", "forceCreateProcess", "internetExplorerSwitches"]
@@ -318,7 +330,11 @@ instance FromJSON Capabilities where
                                   <*> opt "chrome.binary" Nothing
                                   <*> opt "chrome.switches" []
                                   <*> opt "chrome.extensions" []
-                                  <*> pure HM.empty
+                                  <*> opt "goog:chromeOptions" mempty
+              Edge {} -> Edge <$> opt "msedge.binary" Nothing
+                              <*> opt "msedge.switches" []
+                              <*> opt "msedge.extensions" []
+                              <*> opt "ms:edgeOptions" mempty
               IE {} -> IE <$> opt "ignoreProtectedModeSettings" True
                           <*> opt "ignoreZoomSettings" False
                           <*> opt "initialBrowserUrl" Nothing
@@ -387,6 +403,17 @@ data Browser = Firefox { -- |The firefox profile to use. If Nothing,
                       , chromeExtensions :: [ChromeExtension]
                         -- | Experimental options not yet exposed through a standard API.
                       , chromeExperimentalOptions :: Object
+                      }
+             | Edge {   -- |Server-side path to Edge binary. If Nothing,
+                        -- use a sensible system-based default.
+                        edgeBinary :: Maybe FilePath
+                        -- |A list of command-line options to pass to the
+                        -- Edge binary.
+                      , edgeOptions :: [String]
+                        -- |A list of extensions to use.
+                      , edgeExtensions :: [ChromeExtension]
+                        -- | Experimental options not yet exposed through a standard API.
+                      , edgeExperimentalOptions :: Object
                       }
              | IE { -- |Whether to skip the protected mode check. If set, tests
                     -- may become flaky, unresponsive, or browsers may hang. If
@@ -515,6 +542,7 @@ instance Default Browser where
 instance ToJSON Browser where
   toJSON Firefox {}   = String "firefox"
   toJSON Chrome {}    = String "chrome"
+  toJSON Edge {}      = String "MicrosoftEdge"
   toJSON Opera {}     = String "opera"
   toJSON IE {}        = String "internet explorer"
   toJSON Phantomjs {} = String "phantomjs"
@@ -525,6 +553,7 @@ instance FromJSON Browser where
   parseJSON (String jStr) = case toLower jStr of
     "firefox"           -> return firefox
     "chrome"            -> return chrome
+    "MicrosoftEdge"     -> return edge
     "internet explorer" -> return ie
     "opera"             -> return opera
     "phantomjs"         -> return phantomjs
@@ -546,6 +575,11 @@ firefox = Firefox Nothing def Nothing Nothing
 -- specified, and no extensions are used.
 chrome :: Browser
 chrome = Chrome Nothing Nothing [] [] HM.empty
+
+-- |Default Edge settings. All Maybe fields are set to Nothing, no options are
+-- specified, and no extensions are used.
+edge :: Browser
+edge = Edge Nothing [] [] HM.empty
 
 -- |Default IE settings. See the 'IE' constructor for more details on
 -- individual defaults
